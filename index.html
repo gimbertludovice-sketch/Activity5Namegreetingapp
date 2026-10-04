@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Android Studio - Activity 5: NameGreetingApp | Gimbert Ludovice</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            as: {
+              bg: '#1e1f22',
+              sidebar: '#2b2d30',
+              editor: '#1e1f22',
+              tab: '#2b2d30',
+              tabActive: '#1e1f22',
+              border: '#3c3f41',
+              accent: '#3574f0',
+              green: '#499c54',
+              orange: '#e2a341',
+              blue: '#589df6',
+              purple: '#b388ff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1f22;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3c3f41;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #55585a;
+    }
+
+    /* Animated ROG Cyberpunk Wallpaper */
+    .rog-live-bg {
+      background: linear-gradient(135deg, #090014 0%, #17002c 40%, #0d001a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .rog-live-bg::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 0, 79, 0.15) 0%, rgba(0, 229, 255, 0.08) 40%, transparent 70%);
+      animation: rogPulse 8s infinite alternate ease-in-out;
+    }
+    .rog-grid {
+      background-image: linear-gradient(to right, rgba(255,0,79,0.08) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(0,229,255,0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @keyframes rogPulse {
+      0% { transform: scale(0.9) rotate(0deg); opacity: 0.6; }
+      100% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    }
+
+    .phone-glass {
+      box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 0 12px #0f1015, 0 0 0 13px #2b2d30;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans overflow-hidden bg-as-bg text-slate-200">
+
+  <header class="h-10 bg-as-sidebar border-b border-as-border flex items-center justify-between px-3 text-xs select-none z-20">
+    <!-- Menu Title -->
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-1.5 font-semibold text-slate-300">
+        <span class="text-as-accent flex items-center"><i data-lucide="code-2" class="w-4 h-4 mr-1"></i> Android Studio</span>
+        <span class="text-slate-500">|</span>
+        <span class="text-slate-200">Activity 5 - NameGreetingApp</span>
+      </div>
+      <div class="hidden md:flex items-center space-x-3 text-slate-400 pl-4 border-l border-as-border">
+        <span class="hover:text-slate-200 cursor-pointer">File</span>
+        <span class="hover:text-slate-200 cursor-pointer">Edit</span>
+        <span class="hover:text-slate-200 cursor-pointer">View</span>
+        <span class="hover:text-slate-200 cursor-pointer">Navigate</span>
+        <span class="hover:text-slate-200 cursor-pointer">Code</span>
+        <span class="hover:text-slate-200 cursor-pointer">Build</span>
+        <span class="hover:text-slate-200 cursor-pointer">Run</span>
+        <span class="hover:text-slate-200 cursor-pointer">Tools</span>
+      </div>
+    </div>
+
+    <!-- Target Device Selector & Action Controls -->
+    <div class="flex items-center space-x-3">
+      <!-- Device Dropdown Selector -->
+      <div class="flex items-center bg-as-bg border border-as-border rounded px-2 py-1 text-slate-300 space-x-2">
+        <i data-lucide="smartphone" class="w-3.5 h-3.5 text-as-green"></i>
+        <span class="font-mono text-[11px]">INFINIX Infinix X6525 (Smart 8 API 33)</span>
+        <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
+      </div>
+
+      <!-- Play & Debug Controls -->
+      <div class="flex items-center space-x-1">
+        <button id="btnRunApp" title="Run 'app' (Shift+F10)" class="p-1.5 hover:bg-as-border rounded text-as-green transition">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+        </button>
+        <button id="btnApplyChanges" title="Apply Changes and Restart Activity" class="p-1.5 hover:bg-as-border rounded text-as-orange transition">
+          <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
+        </button>
+        <button id="btnVoiceDemo" class="flex items-center space-x-1.5 bg-as-accent hover:bg-blue-600 text-white px-2.5 py-1 rounded text-xs transition font-medium">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          <span id="voiceBtnText">Voice Demo</span>
+        </button>
+      </div>
+
+      <!-- Workspace View Toggle -->
+      <div class="flex items-center bg-as-bg border border-as-border rounded p-0.5">
+        <button id="toggleIdeView" class="p-1 bg-as-border text-white rounded" title="IDE Code & Preview">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="toggleDocView" class="p-1 text-slate-400 hover:text-white rounded" title="Technical Explanation">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 flex overflow-hidden relative">
+
+    <!-- LEFT PANEL: Android Project Navigation Tree -->
+    <aside id="projectTreePanel" class="w-64 bg-as-sidebar border-r border-as-border flex flex-col shrink-0 select-none text-xs">
+      <!-- Project Bar Header -->
+      <div class="h-8 px-3 flex items-center justify-between border-b border-as-border font-semibold text-slate-300 bg-as-sidebar">
+        <div class="flex items-center space-x-1.5">
+          <i data-lucide="folder-git-2" class="w-3.5 h-3.5 text-as-blue"></i>
+          <span>Android</span>
+        </div>
+        <i data-lucide="settings" class="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-white"></i>
+      </div>
+
+      <!-- File Structure Tree -->
+      <div class="flex-1 overflow-y-auto p-1 font-mono text-[11px] leading-relaxed">
+        <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300 font-bold">
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+          <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-blue fill-as-blue/20"></i>
+          <span>app</span>
+        </div>
+
+        <!-- Manifests -->
+        <div class="pl-4">
+          <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-400 hover:bg-as-border/40 rounded cursor-pointer">
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 mr-1"></i>
+            <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-orange fill-as-orange/20"></i>
+            <span>manifests</span>
+          </div>
+        </div>
+
+        <!-- Java / Kotlin Code -->
+        <div class="pl-4">
+          <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300">
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+            <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-green fill-as-green/20"></i>
+            <span>java / kotlin</span>
+          </div>
+          
+          <div class="pl-4">
+            <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300">
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+              <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-green fill-as-green/20"></i>
+              <span>com.example.activity5_namegreetingapp</span>
+            </div>
+
+            <!-- Java Files -->
+            <div class="pl-4 space-y-0.5">
+              <div onclick="openTab('mainActivity')" class="tree-file flex items-center px-1.5 py-1 text-slate-300 hover:bg-as-border/50 rounded cursor-pointer border-l-2 border-transparent" id="tree-mainActivity">
+                <i data-lucide="file-code-2" class="w-3.5 h-3.5 mr-1.5 text-as-blue"></i>
+                <span>MainActivity.java</span>
+              </div>
+              <div onclick="openTab('displayActivity')" class="tree-file flex items-center px-1.5 py-1 text-slate-300 hover:bg-as-border/50 rounded cursor-pointer border-l-2 border-transparent" id="tree-displayActivity">
+                <i data-lucide="file-code-2" class="w-3.5 h-3.5 mr-1.5 text-as-blue"></i>
+                <span>DisplayActivity.java</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assets -->
+        <div class="pl-4">
+          <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300">
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+            <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-purple fill-as-purple/20"></i>
+            <span>assets</span>
+          </div>
+          <div class="pl-4">
+            <div onclick="openTab('indexHtml')" class="tree-file flex items-center px-1.5 py-1 text-slate-300 hover:bg-as-border/50 rounded cursor-pointer border-l-2 border-transparent" id="tree-indexHtml">
+              <i data-lucide="file-type-2" class="w-3.5 h-3.5 mr-1.5 text-as-orange"></i>
+              <span>index.html</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resources (res) -->
+        <div class="pl-4">
+          <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300">
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+            <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-orange fill-as-orange/20"></i>
+            <span>res</span>
+          </div>
+
+          <div class="pl-4">
+            <!-- Layout directory -->
+            <div class="tree-item flex items-center px-1.5 py-0.5 text-slate-300">
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+              <i data-lucide="folder" class="w-3.5 h-3.5 mr-1.5 text-as-orange fill-as-orange/20"></i>
+              <span>layout</span>
+            </div>
+            <div class="pl-4 space-y-0.5">
+              <div onclick="openTab('activityMainXml')" class="tree-file flex items-center px-1.5 py-1 text-slate-300 hover:bg-as-border/50 rounded cursor-pointer border-l-2 border-transparent" id="tree-activityMainXml">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 mr-1.5 text-as-green"></i>
+                <span>activity_main.xml</span>
+              </div>
+              <div onclick="openTab('activityDisplayXml')" class="tree-file flex items-center px-1.5 py-1 text-slate-300 hover:bg-as-border/50 rounded cursor-pointer border-l-2 border-transparent" id="tree-activityDisplayXml">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 mr-1.5 text-as-green"></i>
+                <span>activity_display.xml</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student & Project Meta Badge -->
+      <div class="p-3 bg-slate-900/80 border-t border-as-border text-[11px] space-y-1">
+        <div class="text-as-blue font-bold flex items-center">
+          <i data-lucide="user" class="w-3 h-3 mr-1"></i> Gimbert Ludovice
+        </div>
+        <div class="text-slate-400">Sec: WITMWD3M1</div>
+        <div class="text-slate-400">Prof: Sir John Kyle Martin</div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: Code Editor & Layout Canvas -->
+    <section id="editorWorkspace" class="flex-1 flex flex-col bg-as-editor min-w-0 overflow-hidden">
+      <!-- File Editor Tabs -->
+      <div id="tabsContainer" class="h-9 bg-as-sidebar border-b border-as-border flex items-center overflow-x-auto select-none text-xs scrollbar-none">
+        <button onclick="openTab('mainActivity')" id="tab-mainActivity" class="tab-btn px-3 h-full flex items-center space-x-2 border-r border-as-border text-slate-300 bg-as-editor border-t-2 border-t-as-accent font-medium">
+          <i data-lucide="file-code-2" class="w-3.5 h-3.5 text-as-blue"></i>
+          <span>MainActivity.java</span>
+        </button>
+        <button onclick="openTab('displayActivity')" id="tab-displayActivity" class="tab-btn px-3 h-full flex items-center space-x-2 border-r border-as-border text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-code-2" class="w-3.5 h-3.5 text-as-blue"></i>
+          <span>DisplayActivity.java</span>
+        </button>
+        <button onclick="openTab('activityMainXml')" id="tab-activityMainXml" class="tab-btn px-3 h-full flex items-center space-x-2 border-r border-as-border text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-code" class="w-3.5 h-3.5 text-as-green"></i>
+          <span>activity_main.xml</span>
+        </button>
+        <button onclick="openTab('activityDisplayXml')" id="tab-activityDisplayXml" class="tab-btn px-3 h-full flex items-center space-x-2 border-r border-as-border text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-code" class="w-3.5 h-3.5 text-as-green"></i>
+          <span>activity_display.xml</span>
+        </button>
+        <button onclick="openTab('indexHtml')" id="tab-indexHtml" class="tab-btn px-3 h-full flex items-center space-x-2 border-r border-as-border text-slate-400 hover:text-slate-200">
+          <i data-lucide="file-type-2" class="w-3.5 h-3.5 text-as-orange"></i>
+          <span>index.html</span>
+        </button>
+      </div>
+
+      <!-- Code Text Editor / XML Blueprint Viewer Area -->
+      <div class="flex-1 relative overflow-auto p-4 font-mono text-xs leading-relaxed">
+        <!-- MainActivity.java Code -->
+        <pre id="code-mainActivity" class="code-view text-slate-300">
+<span class="text-as-purple">package</span> com.example.namegreetingapp;
+
+<span class="text-as-purple">import</span> android.content.Intent;
+<span class="text-as-purple">import</span> android.os.Bundle;
+<span class="text-as-purple">import</span> android.widget.Button;
+<span class="text-as-purple">import</span> android.widget.EditText;
+<span class="text-as-purple">import</span> android.widget.Toast;
+<span class="text-as-purple">import</span> androidx.appcompat.app.AppCompatActivity;
+
+<span class="text-slate-500">/**
+ * Activity 5 - Name Greeting App
+ * Student: Gimbert Ludovice | Section: WITMWD3M1
+ * Instructor: Sir John Kyle Martin
+ */</span>
+<span class="text-as-blue">public class</span> <span class="text-as-orange">MainActivity</span> <span class="text-as-blue">extends</span> <span class="text-as-orange">AppCompatActivity</span> {
+
+    <span class="text-as-blue">private</span> EditText etName;
+
+    <span class="text-as-purple">@Override</span>
+    <span class="text-as-blue">protected void</span> <span class="text-as-blue">onCreate</span>(Bundle savedInstanceState) {
+        <span class="text-as-blue">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etName = findViewById(R.id.etName);
+        Button btnSubmit = findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener(v -&gt; {
+            String name = etName.getText().toString().trim();
+
+            <span class="text-as-purple">if</span> (name.isEmpty()) {
+                Toast.makeText(MainActivity.<span class="text-as-blue">this</span>, <span class="text-as-green">"Please enter your name"</span>, Toast.LENGTH_SHORT).show();
+            } <span class="text-as-purple">else</span> {
+                <span class="text-slate-500">// Send name to DisplayActivity using Intent Extra</span>
+                Intent intent = <span class="text-as-purple">new</span> Intent(MainActivity.<span class="text-as-blue">this</span>, DisplayActivity.<span class="text-as-blue">class</span>);
+                intent.putExtra(<span class="text-as-green">"USER_NAME"</span>, name);
+                startActivity(intent);
+            }
+        });
+    }
+}</pre>
+
+        <!-- DisplayActivity.java Code -->
+        <pre id="code-displayActivity" class="code-view hidden text-slate-300">
+<span class="text-as-purple">package</span> com.example.activity5_namegreetingapp;
+
+<span class="text-as-purple">import</span> android.os.Bundle;
+<span class="text-as-purple">import</span> android.webkit.WebSettings;
+<span class="text-as-purple">import</span> android.webkit.WebView;
+<span class="text-as-purple">import</span> android.webkit.WebViewClient;
+<span class="text-as-purple">import</span> android.widget.TextView;
+<span class="text-as-purple">import</span> androidx.appcompat.app.AppCompatActivity;
+
+<span class="text-as-blue">public class</span> <span class="text-as-orange">DisplayActivity</span> <span class="text-as-blue">extends</span> <span class="text-as-orange">AppCompatActivity</span> {
+
+    <span class="text-as-purple">@Override</span>
+    <span class="text-as-blue">protected void</span> <span class="text-as-blue">onCreate</span>(Bundle savedInstanceState) {
+        <span class="text-as-blue">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_display);
+
+        TextView tvGreeting = findViewById(R.id.tvGreeting);
+        WebView webViewPortfolio = findViewById(R.id.webViewPortfolio);
+
+        <span class="text-slate-500">// Retrieve the extra name sent from MainActivity</span>
+        String userName = getIntent().getStringExtra(<span class="text-as-green">"USER_NAME"</span>);
+
+        <span class="text-as-purple">if</span> (userName != <span class="text-as-blue">null</span> &amp;&amp; !userName.isEmpty()) {
+            tvGreeting.setText(<span class="text-as-green">"Hello, "</span> + userName + <span class="text-as-green">"!"</span>);
+        } <span class="text-as-purple">else</span> {
+            tvGreeting.setText(<span class="text-as-green">"Hello, Guest!"</span>);
+        }
+
+        <span class="text-slate-500">// Configure WebView to render responsive HTML5 Portfolio</span>
+        WebSettings webSettings = webViewPortfolio.getSettings();
+        webSettings.setJavaScriptEnabled(<span class="text-as-blue">true</span>);
+        webSettings.setDomStorageEnabled(<span class="text-as-blue">true</span>);
+        webViewPortfolio.setWebViewClient(<span class="text-as-purple">new</span> WebViewClient());
+
+        <span class="text-slate-500">// Load direct embedded HTML5 portfolio content</span>
+        webViewPortfolio.loadDataWithBaseURL(<span class="text-as-blue">null</span>, getPortfolioHtml(), <span class="text-as-green">"text/html"</span>, <span class="text-as-green">"UTF-8"</span>, <span class="text-as-blue">null</span>);
+    }
+}</pre>
+
+        <!-- activity_main.xml Code -->
+        <pre id="code-activityMainXml" class="code-view hidden text-slate-300">
+<span class="text-slate-500">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+&lt;<span class="text-as-blue">LinearLayout</span> <span class="text-as-orange">xmlns:android</span>=<span class="text-as-green">"http://schemas.android.com/apk/res/android"</span>
+    <span class="text-as-orange">android:layout_width</span>=<span class="text-as-green">"match_parent"</span>
+    <span class="text-as-orange">android:layout_height</span>=<span class="text-as-green">"match_parent"</span>
+    <span class="text-as-orange">android:orientation</span>=<span class="text-as-green">"vertical"</span>
+    <span class="text-as-orange">android:padding</span>=<span class="text-as-green">"24dp"</span>
+    <span class="text-as-orange">android:background</span>=<span class="text-as-green">"#F4F7FB"</span>&gt;
+
+    &lt;<span class="text-as-blue">TextView</span>
+        <span class="text-as-orange">android:layout_width</span>=<span class="text-as-green">"match_parent"</span>
+        <span class="text-as-orange">android:layout_height</span>=<span class="text-as-green">"wrap_content"</span>
+        <span class="text-as-orange">android:text</span>=<span class="text-as-green">"Student: Gimbert Ludovice&#10;Section: WITMWD3M1&#10;Date: 10/01/26&#10;Professor: Sir. John Kyle Martin"</span>
+        <span class="text-as-orange">android:textColor</span>=<span class="text-as-green">"#5A7393"</span> /&gt;
+
+    &lt;<span class="text-as-blue">TextView</span>
+        <span class="text-as-orange">android:text</span>=<span class="text-as-green">"Welcome!"</span>
+        <span class="text-as-orange">android:textSize</span>=<span class="text-as-green">"28sp"</span>
+        <span class="text-as-orange">android:textStyle</span>=<span class="text-as-green">"bold"</span>
+        <span class="text-as-orange">android:textColor</span>=<span class="text-as-green">"#001A38"</span> /&gt;
+
+    &lt;<span class="text-as-blue">EditText</span>
+        <span class="text-as-orange">android:id</span>=<span class="text-as-green">"@+id/etName"</span>
+        <span class="text-as-orange">android:hint</span>=<span class="text-as-green">"Enter your name"</span> /&gt;
+
+    &lt;<span class="text-as-blue">Button</span>
+        <span class="text-as-orange">android:id</span>=<span class="text-as-green">"@+id/btnSubmit"</span>
+        <span class="text-as-orange">android:text</span>=<span class="text-as-green">"Submit"</span>
+        <span class="text-as-orange">android:backgroundTint</span>=<span class="text-as-green">"#001A38"</span> /&gt;
+&lt;/<span class="text-as-blue">LinearLayout</span>&gt;</pre>
+
+        <!-- activity_display.xml Code -->
+        <pre id="code-activityDisplayXml" class="code-view hidden text-slate-300">
+<span class="text-slate-500">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+&lt;<span class="text-as-blue">LinearLayout</span> <span class="text-as-orange">xmlns:android</span>=<span class="text-as-green">"http://schemas.android.com/apk/res/android"</span>
+    <span class="text-as-orange">android:layout_width</span>=<span class="text-as-green">"match_parent"</span>
+    <span class="text-as-orange">android:layout_height</span>=<span class="text-as-green">"match_parent"</span>
+    <span class="text-as-orange">android:orientation</span>=<span class="text-as-green">"vertical"</span>
+    <span class="text-as-orange">android:background</span>=<span class="text-as-green">"#001A38"</span>&gt;
+
+    &lt;<span class="text-as-blue">TextView</span>
+        <span class="text-as-orange">android:id</span>=<span class="text-as-green">"@+id/tvGreeting"</span>
+        <span class="text-as-orange">android:text</span>=<span class="text-as-green">"Hello, My I'm Gimbert Ludovice!"</span>
+        <span class="text-as-orange">android:textColor</span>=<span class="text-as-green">"#6BEB71"</span>
+        <span class="text-as-orange">android:textSize</span>=<span class="text-as-green">"24sp"</span> /&gt;
+
+    &lt;<span class="text-as-blue">WebView</span>
+        <span class="text-as-orange">android:id</span>=<span class="text-as-green">"@+id/webViewPortfolio"</span>
+        <span class="text-as-orange">android:layout_width</span>=<span class="text-as-green">"match_parent"</span>
+        <span class="text-as-orange">android:layout_height</span>=<span class="text-as-green">"0dp"</span>
+        <span class="text-as-orange">android:layout_weight</span>=<span class="text-as-green">"1"</span> /&gt;
+&lt;/<span class="text-as-blue">LinearLayout</span>&gt;</pre>
+
+        <!-- index.html Code -->
+        <pre id="code-indexHtml" class="code-view hidden text-slate-300">
+<span class="text-slate-500">&lt;!DOCTYPE html&gt;</span>
+&lt;<span class="text-as-blue">html</span> <span class="text-as-orange">lang</span>=<span class="text-as-green">"en"</span>&gt;
+&lt;<span class="text-as-blue">head</span>&gt;
+  &lt;<span class="text-as-blue">meta</span> <span class="text-as-orange">charset</span>=<span class="text-as-green">"UTF-8"</span> /&gt;
+  &lt;<span class="text-as-blue">meta</span> <span class="text-as-orange">name</span>=<span class="text-as-green">"viewport"</span> <span class="text-as-orange">content</span>=<span class="text-as-green">"width=device-width, initial-scale=1.0"</span> /&gt;
+  &lt;<span class="text-as-blue">title</span>&gt;Gimbert Ludovice | BSIT Portfolio&lt;/<span class="text-as-blue">title</span>&gt;
+  &lt;<span class="text-as-blue">style</span>&gt;
+    :root { --navy: #001a38; --gold: #f0a500; --white: #ffffff; }
+    body { font-family: sans-serif; background: var(--navy); color: var(--white); text-align: center; padding: 20px; }
+    h1 { color: var(--gold); font-size: 2rem; margin-bottom: 5px; }
+    p { color: rgba(255,255,255,0.8); line-height: 1.5; }
+    .card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 16px; margin-top: 20px; }
+  &lt;/<span class="text-as-blue">style</span>&gt;
+&lt;/<span class="text-as-blue">head</span>&gt;
+&lt;<span class="text-as-blue">body</span>&gt;
+  &lt;<span class="text-as-blue">p</span>&gt;✦ BSIT Student • Web Developer&lt;/<span class="text-as-blue">p</span>&gt;
+  &lt;<span class="text-as-blue">h1</span>&gt;Gimbert Ludovice&lt;/<span class="text-as-blue">h1</span>&gt;
+  &lt;<span class="text-as-blue">p</span>&gt;Mobile &amp; Website Development Specialist&lt;/<span class="text-as-blue">p</span>&gt;
+  &lt;<span class="text-as-blue">div</span> <span class="text-as-orange">class</span>=<span class="text-as-green">"card"</span>&gt;
+    &lt;<span class="text-as-blue">p</span>&gt;Focused on HTML5 and CSS3 clean, responsive, and highly accessible web experiences.&lt;/<span class="text-as-blue">p</span>&gt;
+  &lt;/<span class="text-as-blue">div</span>&gt;
+&lt;/<span class="text-as-blue">body</span>&gt;
+&lt;/<span class="text-as-blue">html</span>&gt;</pre>
+      </div>
+
+      <!-- Technical Explanation Document Overlay -->
+      <div id="docExplanationPanel" class="hidden flex-1 overflow-y-auto p-6 bg-slate-900 text-slate-200 leading-relaxed font-sans border-t border-as-border">
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="border-b border-slate-700 pb-4">
+            <h1 class="text-2xl font-bold text-as-blue">Activity 5 Technical Documentation & HTML5 Integration</h1>
+            <p class="text-sm text-slate-400 mt-1">Prepared by: <strong class="text-slate-200">Gimbert Ludovice</strong> (Section WITMWD3M1) | Instructor: <strong class="text-slate-200">Sir John Kyle Martin</strong></p>
+          </div>
+
+          <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-as-green flex items-center">
+              <i data-lucide="layers" class="w-5 h-5 mr-2"></i> 1. Android Studio HTML5 WebView Architecture
+            </h2>
+            <p class="text-sm text-slate-300">
+              In Android Studio, embedding HTML5 code inside a native activity requires initializing a <code class="bg-slate-800 px-1.5 py-0.5 rounded text-as-orange font-mono">WebView</code> view in layout XML and enabling execution via Java/Kotlin code.
+            </p>
+            <ul class="list-disc pl-5 text-sm text-slate-300 space-y-1.5">
+              <li><strong>WebSettings configuration:</strong> <code class="bg-slate-800 px-1 py-0.5 rounded font-mono text-as-blue">webSettings.setJavaScriptEnabled(true)</code> allows script execution inside the app frame.</li>
+              <li><strong>Inline Data Loading:</strong> Using <code class="bg-slate-800 px-1 py-0.5 rounded font-mono text-as-blue">webView.loadDataWithBaseURL()</code> renders HTML5 markup straight from code strings without requiring extra server setups.</li>
+            </ul>
+          </section>
+
+          <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-as-orange flex items-center">
+              <i data-lucide="arrow-right-left" class="w-5 h-5 mr-2"></i> 2. Intent Extra Data Passing
+            </h2>
+            <p class="text-sm text-slate-300">
+              When the user inputs their name in <code class="font-mono text-as-blue">MainActivity</code>, the name string is passed seamlessly to <code class="font-mono text-as-blue">DisplayActivity</code>:
+            </p>
+            <div class="bg-slate-950 p-3 rounded border border-slate-800 font-mono text-xs text-slate-300">
+              Intent intent = new Intent(MainActivity.this, DisplayActivity.class);<br/>
+              intent.putExtra("USER_NAME", name);<br/>
+              startActivity(intent);
+            </div>
+          </section>
+
+          <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-as-purple flex items-center">
+              <i data-lucide="smartphone" class="w-5 h-5 mr-2"></i> 3. Fluid Responsive & Wireless Simulation
+            </h2>
+            <p class="text-sm text-slate-300">
+              The phone simulator mimics the exact physical layout of the <strong>Infinix Smart 8 (Infinix X6525)</strong>, complete with camera punch-hole cutout, wireless dynamic wallpapers (ROG Cyberpunk Live theme), gesture controls, and smooth auto-adjusting responsive viewports across all screen resolutions.
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Wireless Infinix Smart 8 Device Simulator -->
+    <aside id="devicePanel" class="w-[380px] lg:w-[420px] bg-slate-950 border-l border-as-border flex flex-col shrink-0 items-center justify-center p-4 select-none relative overflow-hidden">
+      
+      <!-- Device Toolbar Top Header -->
+      <div class="w-full flex items-center justify-between px-2 mb-2 text-xs text-slate-400">
+        <div class="flex items-center space-x-1 font-mono text-[11px]">
+          <i data-lucide="wifi" class="w-3.5 h-3.5 text-as-green"></i>
+          <span>Infinix Smart 8 (Wireless)</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="btnToggleWallpaper" title="Toggle ROG Live Wallpaper" class="p-1 hover:bg-slate-800 rounded text-as-purple transition">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          </button>
+          <button id="btnRotateDevice" title="Rotate Phone Screen" class="p-1 hover:bg-slate-800 rounded text-slate-300 transition">
+            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Smartphone Body Frame (Infinix Smart 8) -->
+      <div id="phoneWrapper" class="relative w-[320px] h-[640px] bg-black rounded-[40px] phone-glass flex flex-col overflow-hidden transition-all duration-300">
+        
+        <!-- Camera Notch Punch Hole -->
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-50 flex items-center justify-center space-x-2 border border-slate-800/50">
+          <div class="w-2.5 h-2.5 bg-slate-900 rounded-full border border-slate-700"></div>
+          <div class="w-1.5 h-1.5 bg-blue-900/60 rounded-full"></div>
+        </div>
+
+        <!-- Android Status Bar -->
+        <div class="h-8 pt-1 px-6 flex items-center justify-between text-[10px] text-white font-medium z-40 select-none bg-black/30 backdrop-blur-sm">
+          <span>9:51 PM</span>
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="wifi" class="w-3 h-3"></i>
+            <i data-lucide="signal" class="w-3 h-3"></i>
+            <span class="text-[9px]">53%</span>
+          </div>
+        </div>
+
+        <div id="phoneScreenContainer" class="flex-1 relative overflow-hidden bg-slate-900">
+          
+          <!-- HOME SCREEN (Launcher with ROG Live Wallpaper) -->
+          <div id="screenHome" class="absolute inset-0 rog-live-bg rog-grid flex flex-col justify-between p-4 z-10 transition-transform duration-300">
+            <!-- Clock Widget -->
+            <div class="pt-8 text-center text-white">
+              <div class="text-4xl font-light tracking-tight font-sans">09:51</div>
+              <div class="text-xs text-cyan-300/80 font-mono mt-1">Sun, Oct 4 • Infinix Smart 8</div>
+            </div>
+
+            <!-- Launcher App Grid -->
+            <div class="grid grid-cols-4 gap-4 px-2 mb-8">
+              <!-- NameGreetingApp -->
+              <button onclick="launchApp('greetingApp')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-700 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="user-check" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">GreetingApp</span>
+              </button>
+
+              <!-- Camera -->
+              <button onclick="launchApp('camera')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-slate-700 to-slate-500 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="camera" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">Camera</span>
+              </button>
+
+              <!-- Gallery -->
+              <button onclick="launchApp('gallery')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="image" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">Gallery</span>
+              </button>
+
+              <!-- Chrome Browser -->
+              <button onclick="launchApp('browser')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-yellow-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="globe" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">Browser</span>
+              </button>
+
+              <!-- Settings -->
+              <button onclick="launchApp('settings')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-gray-700 to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="settings" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">Settings</span>
+              </button>
+
+              <!-- Files -->
+              <button onclick="launchApp('files')" class="flex flex-col items-center group">
+                <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition">
+                  <i data-lucide="folder" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-[10px] text-white mt-1.5 font-medium drop-shadow">Files</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- APP SCREEN 1: MainActivity (Welcome Input Screen - matching Activity 5.jpg) -->
+          <div id="appScreen1" class="absolute inset-0 bg-[#F4F7FB] flex flex-col p-5 z-20 transition-transform duration-300 translate-x-full">
+            <!-- Academic Info Header -->
+            <div class="text-[11px] text-[#5A7393] space-y-0.5 mb-6 pt-4 leading-tight">
+              <div>Student: Gimbert Ludovice</div>
+              <div>Section: WITMWD3M1</div>
+              <div>Date: 10/01/26</div>
+              <div>Professor: Sir. John Kyle Martin</div>
+            </div>
+
+            <!-- Welcome Greeting Title -->
+            <div class="text-2xl font-bold text-[#001A38] mb-4 text-center">
+              Welcome!
+            </div>
+
+            <!-- Input Field -->
+            <div class="space-y-4">
+              <input type="text" id="phoneInputName" placeholder="Enter your name" value="Gimbert Ludovice" class="w-full px-3 py-2.5 bg-transparent border-b-2 border-slate-300 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#001A38] text-sm transition" />
+              
+              <button id="phoneBtnSubmit" class="w-full py-3 bg-[#001A38] hover:bg-slate-900 text-white rounded-lg font-medium text-sm transition shadow-md active:scale-98">
+                Submit
+              </button>
+            </div>
+
+            <!-- Virtual Keyboard Simulation Graphic -->
+            <div class="mt-auto bg-[#1a1c1e] -mx-5 -mb-5 p-2 rounded-t-xl text-slate-300 text-[10px]">
+              <div class="flex justify-between px-2 py-1 text-slate-400 text-[9px] border-b border-slate-800">
+                <span class="flex items-center"><i data-lucide="grid" class="w-3 h-3 mr-1"></i> Ludovice</span>
+                <span>LUDOVICE</span>
+                <i data-lucide="mic" class="w-3 h-3"></i>
+              </div>
+              <div class="grid grid-cols-10 gap-1 text-center py-2 font-mono">
+                <span>q</span><span>w</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span>
+                <span>a</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span><span>l</span>
+                <span class="col-span-2">z</span><span>x</span><span>c</span><span>v</span><span>b</span><span>n</span><span>m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- APP SCREEN 2: DisplayActivity (HTML5 Portfolio - matching Activity 5B.jpg) -->
+          <div id="appScreen2" class="absolute inset-0 bg-[#001A38] flex flex-col z-30 transition-transform duration-300 translate-x-full">
+            <!-- Header Text View -->
+            <div class="py-3 px-4 bg-[#001A38] text-center border-b border-white/10">
+              <span id="tvGreetingText" class="text-emerald-400 font-bold text-lg leading-tight block">
+                Hello, Gimbert Ludovice!
+              </span>
+            </div>
+
+            <!-- WebView Portfolio Screen Container -->
+            <div class="flex-1 p-5 text-center text-white flex flex-col items-center justify-center space-y-4">
+              <p class="text-xs text-slate-300 tracking-wide font-medium">✦ BSIT Student • Web Developer</p>
+              
+              <h1 class="text-2xl font-bold text-[#f0a500] tracking-wide">
+                Gimbert Ludovice
+              </h1>
+              
+              <p class="text-xs text-slate-200">
+                Mobile & Website Development Specialist
+              </p>
+
+              <!-- Glass Card Portfolio Details -->
+              <div class="w-full bg-white/10 border border-white/20 rounded-xl p-4 mt-4 shadow-xl">
+                <p class="text-xs text-slate-200 leading-relaxed">
+                  Focused on HTML5 and CSS3 clean responsive, and highly accessible web experiences.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- GENERIC APP SCREEN (Settings / Camera / Gallery fallback) -->
+          <div id="appScreenGeneric" class="absolute inset-0 bg-slate-900 text-slate-200 flex flex-col items-center justify-center p-6 z-20 transition-transform duration-300 translate-x-full">
+            <i id="genericAppIcon" data-lucide="app-window" class="w-12 h-12 text-as-blue mb-3"></i>
+            <h3 id="genericAppTitle" class="text-lg font-bold">App Opened</h3>
+            <p class="text-xs text-slate-400 text-center mt-2">Infinix Smart 8 Android System Application</p>
+          </div>
+
+        </div>
+
+        <!-- Android System Navigation Control Bar (Back, Home, Recents) -->
+        <div class="h-10 bg-black/90 backdrop-blur flex items-center justify-around text-slate-400 z-50 border-t border-slate-800/80">
+          <!-- Recents Button -->
+          <button onclick="handleSystemButton('recents')" class="p-2 hover:text-white transition">
+            <i data-lucide="menu" class="w-4 h-4"></i>
+          </button>
+          <!-- Home Button -->
+          <button onclick="handleSystemButton('home')" class="p-2 hover:text-white transition">
+            <i data-lucide="circle" class="w-4 h-4"></i>
+          </button>
+          <!-- Back Button -->
+          <button onclick="handleSystemButton('back')" class="p-2 hover:text-white transition">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+  </main>
+
+  <script>
+    // System Navigation State Management
+    let currentScreen = 'home'; 
+    let activeTab = 'mainActivity';
+    let isSpeaking = false;
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Switching Logic
+    function openTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-as-editor', 'border-t-2', 'border-t-as-accent', 'text-slate-300');
+        btn.classList.add('text-slate-400');
+      });
+      document.querySelectorAll('.tree-file').forEach(el => {
+        el.classList.remove('bg-as-border/70', 'border-as-accent');
+      });
+      document.querySelectorAll('.code-view').forEach(view => {
+        view.classList.add('hidden');
+      });
+
+      // Activate Selected Tab
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      if (targetTab) {
+        targetTab.classList.add('bg-as-editor', 'border-t-2', 'border-t-as-accent', 'text-slate-300');
+        targetTab.classList.remove('text-slate-400');
+      }
+
+      const targetTree = document.getElementById(`tree-${tabId}`);
+      if (targetTree) {
+        targetTree.classList.add('bg-as-border/70', 'border-as-accent');
+      }
+
+      const targetCode = document.getElementById(`code-${tabId}`);
+      if (targetCode) {
+        targetCode.classList.remove('hidden');
+      }
+    }
+
+    // Smartphone Navigation Logic
+    function launchApp(appName) {
+      if (appName === 'greetingApp') {
+        showPhoneScreen('appScreen1');
+      } else {
+        const titleEl = document.getElementById('genericAppTitle');
+        const iconEl = document.getElementById('genericAppIcon');
+        if (titleEl) titleEl.innerText = appName.toUpperCase();
+        showPhoneScreen('appScreenGeneric');
+      }
+    }
+
+    function showPhoneScreen(screenId) {
+      currentScreen = screenId;
+      const screens = ['screenHome', 'appScreen1', 'appScreen2', 'appScreenGeneric'];
+      screens.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (id === screenId) {
+            el.classList.remove('translate-x-full', '-translate-x-full');
+          } else {
+            el.classList.add('translate-x-full');
+          }
+        }
+      });
+    }
+
+    function handleSystemButton(action) {
+      if (action === 'home') {
+        showPhoneScreen('screenHome');
+      } else if (action === 'back') {
+        if (currentScreen === 'appScreen2') {
+          showPhoneScreen('appScreen1');
+        } else if (currentScreen === 'appScreen1' || currentScreen === 'appScreenGeneric') {
+          showPhoneScreen('screenHome');
+        }
+      }
+    }
+
+    // Submit Action inside Virtual Smartphone
+    document.getElementById('phoneBtnSubmit')?.addEventListener('click', () => {
+      const inputVal = document.getElementById('phoneInputName').value.trim();
+      const tvGreeting = document.getElementById('tvGreetingText');
+      
+      if (tvGreeting) {
+        if (inputVal !== "") {
+          tvGreeting.innerText = `Hello, ${inputVal}!`;
+        } else {
+          tvGreeting.innerText = "Hello, Guest!";
+        }
+      }
+      showPhoneScreen('appScreen2');
+    });
+
+    // Run Button Simulator
+    document.getElementById('btnRunApp')?.addEventListener('click', () => {
+      launchApp('greetingApp');
+    });
+
+    // Workspace View Toggle Buttons (IDE Code vs Explanation Docs)
+    document.getElementById('toggleIdeView')?.addEventListener('click', () => {
+      document.getElementById('docExplanationPanel')?.classList.add('hidden');
+      document.querySelectorAll('.code-view').forEach(v => {
+        if (v.id === `code-${activeTab}`) v.classList.remove('hidden');
+      });
+    });
+
+    document.getElementById('toggleDocView')?.addEventListener('click', () => {
+      document.querySelectorAll('.code-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('docExplanationPanel')?.classList.remove('hidden');
+    });
+
+    // Voice Demonstration Text-To-Speech (SpeechSynthesis API)
+    const voiceText = "Greetings. I am Gimbert Ludovice from section WITMWD3M1. This is Activity 5, Name Greeting App, presented for Professor Sir John Kyle Martin. In Android Studio, we render responsive HTML5 applications inside native Android views using WebView. MainActivity captures user input and passes the name string to DisplayActivity via Intent extras. DisplayActivity configures WebSettings, enables JavaScript, and renders our clean HTML5 and CSS3 portfolio directly on the Infinix Smart 8 simulator.";
+
+    document.getElementById('btnVoiceDemo')?.addEventListener('click', () => {
+      if ('speechSynthesis' in window) {
+        if (isSpeaking) {
+          window.speechSynthesis.cancel();
+          isSpeaking = false;
+          document.getElementById('voiceBtnText').innerText = "Voice Demo";
+        } else {
+          const utterance = new SpeechSynthesisUtterance(voiceText);
+          utterance.rate = 0.95;
+          utterance.pitch = 1.0;
+          utterance.onend = () => {
+            isSpeaking = false;
+            document.getElementById('voiceBtnText').innerText = "Voice Demo";
+          };
+          window.speechSynthesis.speak(utterance);
+          isSpeaking = true;
+          document.getElementById('voiceBtnText').innerText = "Speaking...";
+        }
+      } else {
+        alert("Text-to-speech is not supported on this browser.");
+      }
+    });
+
+    // Device Wallpaper Style Toggle
+    document.getElementById('btnToggleWallpaper')?.addEventListener('click', () => {
+      const homeScreen = document.getElementById('screenHome');
+      if (homeScreen) {
+        homeScreen.classList.toggle('rog-live-bg');
+      }
+    });
+
+    // Rotate Device Preview Switcher
+    let isLandScape = false;
+    document.getElementById('btnRotateDevice')?.addEventListener('click', () => {
+      const wrapper = document.getElementById('phoneWrapper');
+      if (wrapper) {
+        if (!isLandScape) {
+          wrapper.style.transform = 'rotate(-90deg) scale(0.85)';
+          isLandScape = true;
+        } else {
+          wrapper.style.transform = 'rotate(0deg) scale(1)';
+          isLandScape = false;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
